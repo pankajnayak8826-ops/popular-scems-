@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>भारत योजना AI 🇮🇳</title>
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+}
+
+body{
+    background:#f4f7fb;
+    color:#172033;
+}
+
+/* HEADER */
+header{
+    background:linear-gradient(135deg,#ff7a00,#ff9933,#138808);
+    color:white;
+    padding:25px 15px 35px;
+    text-align:center;
+    border-radius:0 0 28px 28px;
+}
+
+.flag{
+    font-size:42px;
+}
+
+header h1{
+    font-size:30px;
+    margin-top:5px;
+}
+
+header p{
+    margin-top:8px;
+    opacity:.95;
+}
+
+/* CONTAINER */
+.container{
+    width:min(1100px,94%);
+    margin:20px auto;
+}
+
+/* AI BOX */
+.ai-box{
+    background:white;
+    padding:18px;
+    border-radius:20px;
+    box-shadow:0 8px 25px rgba(0,0,0,.08);
+    margin-bottom:20px;
+}
+
+.ai-box h2{
+    margin-bottom:12px;
+}
+
+.input-row{
+    display:flex;
+    gap:10px;
+}
+
+input,select{
+    width:100%;
+    padding:13px;
+    border:1px solid #dce2ea;
+    border-radius:12px;
+    outline:none;
+    font-size:15px;
+}
+
+button{
+    border:none;
+    padding:12px 18px;
+    border-radius:12px;
+    cursor:pointer;
+    background:#ff7a00;
+    color:white;
+    font-weight:700;
+}
+
+button:hover{
+    opacity:.9;
+}
+
+.api-box{
+    margin-top:12px;
+    display:none;
+}
+
+.api-box small{
+    display:block;
+    margin-top:6px;
+    color:#777;
+}
+
+/* SEARCH */
+.controls{
+    display:grid;
+    grid-template-columns:2fr 1fr;
+    gap:12px;
+    margin-bottom:20px;
+}
+
+/* CARDS */
+.grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+    gap:16px;
+}
+
+.card{
+    background:white;
+    border-radius:20px;
+    padding:20px;
+    box-shadow:0 7px 20px rgba(0,0,0,.07);
+    transition:.25s;
+    border-top:5px solid #ff7a00;
+}
+
+.card:hover{
+    transform:translateY(-4px);
+}
+
+.card .icon{
+    font-size:35px;
+}
+
+.card h3{
+    margin:10px 0;
+    font-size:19px;
+}
+
+.card p{
+    color:#667085;
+    line-height:1.5;
+}
+
+.tag{
+    display:inline-block;
+    margin-top:12px;
+    padding:5px 10px;
+    border-radius:20px;
+    background:#fff1e5;
+    color:#e76500;
+    font-size:12px;
+    font-weight:bold;
+}
+
+.card button{
+    margin-top:14px;
+    width:100%;
+}
+
+/* MODAL */
+.modal{
+    display:none;
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,.6);
+    z-index:100;
+    padding:20px;
+}
+
+.modal-content{
+    max-width:700px;
+    margin:50px auto;
+    background:white;
+    border-radius:22px;
+    padding:22px;
+    max-height:85vh;
+    overflow:auto;
+}
+
+.close{
+    float:right;
+    font-size:25px;
+    cursor:pointer;
+}
+
+.answer{
+    margin-top:18px;
+    line-height:1.7;
+    white-space:pre-wrap;
+}
+
+.loading{
+    text-align:center;
+    padding:20px;
+}
+
+/* FOOTER */
+footer{
+    text-align:center;
+    padding:30px 15px;
+    color:#667085;
+}
+
+/* MOBILE */
+@media(max-width:600px){
+    header h1{
+        font-size:24px;
+    }
+
+    .input-row{
+        flex-direction:column;
+    }
+
+    .controls{
+        grid-template-columns:1fr;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <div class="flag">🇮🇳</div>
+    <h1>भारत योजना AI</h1>
+    <p>सरकारी योजनाओं की जानकारी अब आसान हिंदी में</p>
+</header>
+
+<div class="container">
+
+    <!-- AI -->
+    <section class="ai-box">
+        <h2>🤖 Grok AI से पूछें</h2>
+
+        <div class="input-row">
+            <input
+                id="question"
+                type="text"
+                placeholder="जैसे: PM किसान योजना के लिए कौन पात्र है?"
+            >
+
+            <button onclick="askGrok()">
+                पूछें
+            </button>
+        </div>
+
+        <button
+            style="margin-top:10px;background:#172033;"
+            onclick="toggleApi()">
+            ⚙️ API Key सेट करें
+        </button>
+
+        <div class="api-box" id="apiBox">
+            <input
+                id="apiKey"
+                type="password"
+                placeholder="अपनी xAI API Key यहाँ डालें"
+            >
+
+            <small>
+                ⚠️ API Key को public website में रखना सुरक्षित नहीं है।
+            </small>
+        </div>
+    </section>
+
+    <!-- SEARCH -->
+    <div class="controls">
+
+        <input
+            id="search"
+            type="text"
+            placeholder="🔎 योजना खोजें..."
+            oninput="renderSchemes()"
+        >
+
+        <select id="category" onchange="renderSchemes()">
+            <option value="all">सभी श्रेणियाँ</option>
+            <option value="किसान">🌾 किसान</option>
+            <option value="महिला">👩 महिला</option>
+            <option value="शिक्षा">🎓 शिक्षा</option>
+            <option value="स्वास्थ्य">🏥 स्वास्थ्य</option>
+            <option value="रोजगार">💼 रोजगार</option>
+            <option value="आवास">🏠 आवास</option>
+            <option value="बैंकिंग">🏦 बैंकिंग</option>
+        </select>
+
+    </div>
+
+    <!-- SCHEMES -->
+    <div class="grid" id="schemeGrid"></div>
+
+</div>
+
+<footer>
+    🇮🇳 भारत योजना AI • जानकारी के लिए संबंधित सरकारी विभाग की आधिकारिक वेबसाइट जरूर देखें।
+</footer>
+
+<!-- MODAL -->
+<div class="modal" id="modal">
+
+    <div class="modal-content">
+
+        <span class="close" onclick="closeModal()">×</span>
+
+        <h2 id="modalTitle">Grok AI</h2>
+
+        <div class="answer" id="answer">
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+
+/* =========================
+   GOVERNMENT SCHEMES
+========================= */
+
+const schemes = [
+
+{
+name:"प्रधानमंत्री किसान सम्मान निधि",
+category:"किसान",
+icon:"🌾",
+description:"पात्र किसानों को आर्थिक सहायता प्रदान करने वाली केंद्र सरकार की योजना।"
+},
+
+{
+name:"प्रधानमंत्री आवास योजना",
+category:"आवास",
+icon:"🏠",
+description:"पात्र परिवारों को पक्का घर उपलब्ध कराने के उद्देश्य से चलाई जाने वाली योजना।"
+},
+
+{
+name:"आयुष्मान भारत प्रधानमंत्री जन आरोग्य योजना",
+category:"स्वास्थ्य",
+icon:"🏥",
+description:"पात्र परिवारों को स्वास्थ्य उपचार के लिए सहायता प्रदान करने वाली योजना।"
+},
+
+{
+name:"बेटी बचाओ बेटी पढ़ाओ",
+category:"महिला",
+icon:"👧",
+description:"बालिकाओं की सुरक्षा, शिक्षा और सशक्तिकरण को बढ़ावा देने की पहल।"
+},
+
+{
+name:"प्रधानमंत्री उज्ज्वला योजना",
+category:"महिला",
+icon:"🔥",
+description:"पात्र महिलाओं को स्वच्छ खाना पकाने के ईंधन की सुविधा उपलब्ध कराने की योजना।"
+},
+
+{
+name:"प्रधानमंत्री जन धन योजना",
+category:"बैंकिंग",
+icon:"🏦",
+description:"बैंकिंग सेवाओं से वंचित लोगों को बैंकिंग व्यवस्था से जोड़ने की पहल।"
+},
+
+{
+name:"प्रधानमंत्री मुद्रा योजना",
+category:"रोजगार",
+icon:"💼",
+description:"छोटे व्यवसाय और उद्यमिता को वित्तीय सहायता उपलब्ध कराने की योजना।"
+},
+
+{
+name:"प्रधानमंत्री कौशल विकास योजना",
+category:"रोजगार",
+icon:"🛠️",
+description:"युवाओं को कौशल प्रशिक्षण और रोजगार योग्य बनाने की पहल।"
+},
+
+{
+name:"राष्ट्रीय छात्रवृत्ति योजना",
+category:"शिक्षा",
+icon:"🎓",
+description:"पात्र विद्यार्थियों के लिए विभिन्न छात्रवृत्ति योजनाओं की सुविधा।"
+},
+
+{
+name:"सुकन्या समृद्धि योजना",
+category:"महिला",
+icon:"👧",
+description:"बालिकाओं के भविष्य के लिए बचत को प्रोत्साहित करने वाली योजना।"
+},
+
+{
+name:"प्रधानमंत्री मातृ वंदना योजना",
+category:"महिला",
+icon:"🤰",
+description:"पात्र गर्भवती और स्तनपान कराने वाली महिलाओं के लिए सहायता योजना।"
+},
+
+{
+name:"अटल पेंशन योजना",
+category:"बैंकिंग",
+icon:"💰",
+description:"पात्र नागरिकों के लिए पेंशन संबंधी सामाजिक सुरक्षा योजना।"
+}
+
+];
+
+
+/* =========================
+   RENDER SCHEMES
+========================= */
+
+function renderSchemes(){
+
+    const grid = document.getElementById("schemeGrid");
+
+    const search =
+        document.getElementById("search")
+        .value
+        .toLowerCase();
+
+    const category =
+        document.getElementById("category")
+        .value;
+
+    const filtered = schemes.filter(scheme => {
+
+        const matchSearch =
+            scheme.name.toLowerCase().includes(search) ||
+            scheme.description.toLowerCase().includes(search);
+
+        const matchCategory =
+            category === "all" ||
+            scheme.category === category;
+
+        return matchSearch && matchCategory;
+    });
+
+    grid.innerHTML = "";
+
+    if(filtered.length === 0){
+
+        grid.innerHTML = `
+            <div style="
+                grid-column:1/-1;
+                text-align:center;
+                padding:40px;
+                background:white;
+                border-radius:20px;
+            ">
+                😕 कोई योजना नहीं मिली।
+            </div>
+        `;
+
+        return;
+    }
+
+    filtered.forEach((scheme,index)=>{
+
+        grid.innerHTML += `
+
+        <div class="card">
+
+            <div class="icon">
+                ${scheme.icon}
+            </div>
+
+            <h3>
+                ${scheme.name}
+            </h3>
+
+            <p>
+                ${scheme.description}
+            </p>
+
+            <span class="tag">
+                ${scheme.category}
+            </span>
+
+            <button
+                onclick="askAboutScheme('${scheme.name.replace(/'/g,"\\'")}')">
+                🤖 Grok से जानकारी लें
+            </button>
+
+        </div>
+
+        `;
+    });
+}
+
+
+/* =========================
+   API SETTINGS
+========================= */
+
+function toggleApi(){
+
+    const box = document.getElementById("apiBox");
+
+    if(box.style.display === "block"){
+        box.style.display = "none";
+    }else{
+        box.style.display = "block";
+    }
+}
+
+
+/* =========================
+   ASK ABOUT SCHEME
+========================= */
+
+function askAboutScheme(name){
+
+    document.getElementById("question").value =
+        `${name} योजना के लिए पात्रता, लाभ, आवश्यक दस्तावेज और आवेदन प्रक्रिया हिंदी में बताइए।`;
+
+    askGrok();
+}
+
+
+/* =========================
+   GROK API
+========================= */
+
+async function askGrok(){
+
+    const question =
+        document.getElementById("question").value.trim();
+
+    const apiKey =
+        document.getElementById("apiKey").value.trim();
+
+    if(!question){
+
+        alert("कृपया अपना सवाल लिखें।");
+        return;
+    }
+
+    if(!apiKey){
+
+        alert("पहले अपनी xAI API Key डालें।");
+        document.getElementById("apiBox").style.display = "block";
+        return;
+    }
+
+    const modal =
+        document.getElementById("modal");
+
+    const answer =
+        document.getElementById("answer");
+
+    document.getElementById("modalTitle")
+        .innerText = "🤖 Grok AI";
+
+    modal.style.display = "block";
+
+    answer.innerHTML =
+        `<div class="loading">⏳ Grok जवाब तैयार कर रहा है...</div>`;
+
+    try{
+
+        const response = await fetch(
+            "https://api.x.ai/v1/responses",
+            {
+                method:"POST",
+
+                headers:{
+                    "Content-Type":"application/json",
+                    "Authorization":
+                        "Bearer " + apiKey
+                },
+
+                body:JSON.stringify({
+
+                    model:"grok-4.7",
+
+                    input:[
+                        {
+                            role:"system",
+                            content:
+                            `आप भारत सरकार की योजनाओं के बारे में
+                            हिंदी में सरल और स्पष्ट जानकारी देने वाले AI सहायक हैं।
+
+                            उत्तर में:
+                            1. योजना का नाम
+                            2. योजना का उद्देश्य
+                            3. पात्रता
+                            4. लाभ
+                            5. आवश्यक दस्तावेज
+                            6. आवेदन प्रक्रिया
+                            बताएं।
+
+                            यदि जानकारी निश्चित न हो तो अनुमान न लगाएं।
+                            उपयोगकर्ता को संबंधित आधिकारिक सरकारी वेबसाइट
+                            पर जानकारी सत्यापित करने की सलाह दें।`
+                        },
+
+                        {
+                            role:"user",
+                            content:question
+                        }
+                    ]
+
+                })
+            }
+        );
+
+        const data = await response.json();
+
+        if(!response.ok){
+
+            throw new Error(
+                data.error?.message ||
+                "API request failed"
+            );
+        }
+
+        /*
+         * xAI Responses API में output_text
+         * उपलब्ध होने पर सीधे इस्तेमाल करें।
+         */
+
+        let text = data.output_text;
+
+        /*
+         * fallback parser
+         */
+
+        if(!text && data.output){
+
+            text = data.output
+                .flatMap(item => item.content || [])
+                .filter(item =>
+                    item.type === "output_text"
+                )
+                .map(item => item.text)
+                .join("\n");
+        }
+
+        answer.innerText =
+            text || "कोई उत्तर प्राप्त नहीं हुआ।";
+
+    }catch(error){
+
+        answer.innerText =
+            "❌ Error:\n\n" +
+            error.message +
+            "\n\nAPI Key और इंटरनेट कनेक्शन जांचें।";
+    }
+}
+
+
+/* =========================
+   CLOSE MODAL
+========================= */
+
+function closeModal(){
+
+    document.getElementById("modal")
+        .style.display = "none";
+}
+
+
+/* =========================
+   INITIAL LOAD
+========================= */
+
+renderSchemes();
+
+</script>
+
+</body>
+              </html>
